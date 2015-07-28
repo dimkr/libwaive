@@ -36,4 +36,6 @@ enum waive_flags {
 	WAIVE_KILL		= 1 << 7
 };
 
+int waive(const int flags);
+
 #endif
