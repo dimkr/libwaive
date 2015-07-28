@@ -45,14 +45,14 @@ int waive(const int flags)
 		                      SCMP_SYS(socket),
 		                      1,
 		                      SCMP_A0(SCMP_CMP_EQ, AF_INET)))
-			goto out;
+			goto release;
 
 		if (!seccomp_rule_add(ctx,
 		                      SCMP_ACT_ERRNO(EPERM),
 		                      SCMP_SYS(socket),
 		                      1,
 		                      SCMP_A0(SCMP_CMP_EQ, AF_INET6)))
-			goto out;
+			goto release;
 	}
 
 	if (flags & WAIVE_UN) {
@@ -61,7 +61,7 @@ int waive(const int flags)
 		                          SCMP_SYS(socket),
 		                          1,
 		                          SCMP_A0(SCMP_CMP_EQ, AF_UNIX)))
-			goto out;
+			goto release;
 	}
 
 	if (flags & WAIVE_PACKET) {
@@ -70,7 +70,7 @@ int waive(const int flags)
 		                      SCMP_SYS(socket),
 		                      1,
 		                      SCMP_A0(SCMP_CMP_EQ, AF_PACKET)))
-			goto out;
+			goto release;
 	}
 
 	if (flags & WAIVE_MOUNT) {
@@ -78,19 +78,19 @@ int waive(const int flags)
 		                      SCMP_ACT_ERRNO(EPERM),
 		                      SCMP_SYS(mount),
 		                      0))
-			goto out;
+			goto release;
 
 		if (!seccomp_rule_add(ctx,
 		                      SCMP_ACT_ERRNO(EPERM),
 		                      SCMP_SYS(umount),
 		                      0))
-			goto out;
+			goto release;
 
 		if (!seccomp_rule_add(ctx,
 		                      SCMP_ACT_ERRNO(EPERM),
 		                      SCMP_SYS(umount2),
 		                      0))
-			goto out;
+			goto release;
 	}
 
 	if (flags & WAIVE_OPEN) {
@@ -98,19 +98,19 @@ int waive(const int flags)
 		                      SCMP_ACT_ERRNO(EPERM),
 		                      SCMP_SYS(open),
 		                      0))
-			goto out;
+			goto release;
 
 		if (!seccomp_rule_add(ctx,
 		                      SCMP_ACT_ERRNO(EPERM),
 		                      SCMP_SYS(openat),
 		                      0))
-			goto out;
+			goto release;
 
 		if (!seccomp_rule_add(ctx,
 		                      SCMP_ACT_ERRNO(EPERM),
 		                      SCMP_SYS(creat),
 		                      0))
-			goto out;
+			goto release;
 	}
 
 	if (flags & WAIVE_EXEC) {
@@ -118,28 +118,28 @@ int waive(const int flags)
 		                      SCMP_ACT_ERRNO(EPERM),
 		                      SCMP_SYS(execve),
 		                      0))
-			goto out;
+			goto release;
 
 		if (!seccomp_rule_add(ctx,
 		                      SCMP_ACT_ERRNO(EPERM),
 		                      SCMP_SYS(mprotect),
 		                      1,
 		                      SCMP_A2(SCMP_CMP_EQ, PROT_EXEC)))
-			goto out;
+			goto release;
 
 		if (!seccomp_rule_add(ctx,
 		                      SCMP_ACT_ERRNO(EPERM),
 		                      SCMP_SYS(mprotect),
 		                      1,
 		                      SCMP_A2(SCMP_CMP_EQ, PROT_READ | PROT_EXEC)))
-			goto out;
+			goto release;
 
 		if (!seccomp_rule_add(ctx,
 		                      SCMP_ACT_ERRNO(EPERM),
 		                      SCMP_SYS(mprotect),
 		                      1,
 		                      SCMP_A2(SCMP_CMP_EQ, PROT_WRITE | PROT_EXEC)))
-			goto out;
+			goto release;
 
 		if (!seccomp_rule_add(ctx,
 		                      SCMP_ACT_ERRNO(EPERM),
@@ -147,21 +147,21 @@ int waive(const int flags)
 		                      1,
 		                      SCMP_A2(SCMP_CMP_EQ,
 		                              PROT_READ | PROT_WRITE | PROT_EXEC)))
-			goto out;
+			goto release;
 
 		if (!seccomp_rule_add(ctx,
 		                      SCMP_ACT_ERRNO(EPERM),
 		                      SCMP_SYS(mmap),
 		                      1,
 		                      SCMP_A2(SCMP_CMP_EQ, PROT_READ | PROT_EXEC)))
-			goto out;
+			goto release;
 
 		if (!seccomp_rule_add(ctx,
 		                      SCMP_ACT_ERRNO(EPERM),
 		                      SCMP_SYS(mmap),
 		                      1,
 		                      SCMP_A2(SCMP_CMP_EQ, PROT_WRITE | PROT_EXEC)))
-			goto out;
+			goto release;
 
 		if (!seccomp_rule_add(ctx,
 		                      SCMP_ACT_ERRNO(EPERM),
@@ -169,7 +169,7 @@ int waive(const int flags)
 		                      1,
 		                      SCMP_A2(SCMP_CMP_EQ,
 		                              PROT_READ | PROT_WRITE | PROT_EXEC)))
-			goto out;
+			goto release;
 	}
 
 	if (flags & WAIVE_CLONE) {
@@ -177,7 +177,7 @@ int waive(const int flags)
 		                      SCMP_ACT_ERRNO(EPERM),
 		                      SCMP_SYS(clone),
 		                      0))
-			goto out;
+			goto release;
 	}
 
 	if (flags & WAIVE_KILL) {
@@ -186,12 +186,13 @@ int waive(const int flags)
 		                      SCMP_SYS(kill),
 		                      1,
 		                      SCMP_A0(SCMP_CMP_NE, 0)))
-			goto out;
+			goto release;
 	}
 
 	if (0 == seccomp_load(ctx))
 		ret = 0;
 
+release:
 	seccomp_release(ctx);
 
 out:
