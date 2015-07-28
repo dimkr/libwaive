@@ -57,6 +57,7 @@ libwaive.pc: libwaive.pc.in
 
 install: all
 	$(INSTALL) -D -m 755 libwaive.a $(DESTDIR)/$(LIB_DIR)/libwaive.a
+	$(INSTALL) -D -m 755 libwaive.pc $(DESTDIR)/$(LIB_DIR)/pkgconfig/libwaive.pc
 	$(INSTALL) -D -m 755 waive.h $(DESTDIR)/$(INCLUDE_DIR)/waive.h
 	$(INSTALL) -D -m 644 README $(DESTDIR)/$(DOC_DIR)/libwaive/README
 	$(INSTALL) -m 644 AUTHORS $(DESTDIR)/$(DOC_DIR)/libwaive/AUTHORS
