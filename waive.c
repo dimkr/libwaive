@@ -36,40 +36,40 @@ int waive(const int flags)
 	int ret = -1;
 
 	ctx = seccomp_init(SCMP_ACT_ALLOW);
-	if (!ctx)
+	if (NULL == ctx)
 		goto out;
 
-	if (flags & WAIVE_INET) {
-		if (!seccomp_rule_add(ctx,
-		                      SCMP_ACT_ERRNO(EPERM),
-		                      SCMP_SYS(socket),
-		                      1,
-		                      SCMP_A0(SCMP_CMP_EQ, AF_INET)))
+	if (0 != (WAIVE_INET & flags)) {
+		if (0 != seccomp_rule_add(ctx,
+		                          SCMP_ACT_ERRNO(EPERM),
+		                          SCMP_SYS(socket),
+		                          1,
+		                          SCMP_A0(SCMP_CMP_EQ, AF_INET)))
 			goto release;
 
-		if (!seccomp_rule_add(ctx,
-		                      SCMP_ACT_ERRNO(EPERM),
-		                      SCMP_SYS(socket),
-		                      1,
-		                      SCMP_A0(SCMP_CMP_EQ, AF_INET6)))
+		if (0 != seccomp_rule_add(ctx,
+		                          SCMP_ACT_ERRNO(EPERM),
+		                          SCMP_SYS(socket),
+		                          1,
+		                          SCMP_A0(SCMP_CMP_EQ, AF_INET6)))
 			goto release;
 
-		if (!seccomp_rule_add(ctx,
-		                      SCMP_ACT_ERRNO(EPERM),
-		                      SCMP_SYS(socketpair),
-		                      1,
-		                      SCMP_A0(SCMP_CMP_EQ, AF_INET)))
+		if (0 != seccomp_rule_add(ctx,
+		                          SCMP_ACT_ERRNO(EPERM),
+		                          SCMP_SYS(socketpair),
+		                          1,
+		                          SCMP_A0(SCMP_CMP_EQ, AF_INET)))
 			goto release;
 
-		if (!seccomp_rule_add(ctx,
-		                      SCMP_ACT_ERRNO(EPERM),
-		                      SCMP_SYS(socketpair),
-		                      1,
-		                      SCMP_A0(SCMP_CMP_EQ, AF_INET6)))
+		if (0 != seccomp_rule_add(ctx,
+		                          SCMP_ACT_ERRNO(EPERM),
+		                          SCMP_SYS(socketpair),
+		                          1,
+		                          SCMP_A0(SCMP_CMP_EQ, AF_INET6)))
 			goto release;
 	}
 
-	if (flags & WAIVE_UN) {
+	if (0 != (WAIVE_UN & flags)) {
 		if (0 != seccomp_rule_add(ctx,
 		                          SCMP_ACT_ERRNO(EPERM),
 		                          SCMP_SYS(socket),
@@ -77,143 +77,163 @@ int waive(const int flags)
 		                          SCMP_A0(SCMP_CMP_EQ, AF_UNIX)))
 			goto release;
 
-		if (!seccomp_rule_add(ctx,
-		                      SCMP_ACT_ERRNO(EPERM),
-		                      SCMP_SYS(socketpair),
-		                      1,
-		                      SCMP_A0(SCMP_CMP_EQ, AF_UNIX)))
+		if (0 != seccomp_rule_add(ctx,
+		                          SCMP_ACT_ERRNO(EPERM),
+		                          SCMP_SYS(socketpair),
+		                          1,
+		                          SCMP_A0(SCMP_CMP_EQ, AF_UNIX)))
 			goto release;
 	}
 
-	if (flags & WAIVE_PACKET) {
-		if (!seccomp_rule_add(ctx,
-		                      SCMP_ACT_ERRNO(EPERM),
-		                      SCMP_SYS(socket),
-		                      1,
-		                      SCMP_A0(SCMP_CMP_EQ, AF_PACKET)))
+	if (0 != (WAIVE_PACKET & flags)) {
+		if (0 != seccomp_rule_add(ctx,
+		                          SCMP_ACT_ERRNO(EPERM),
+		                          SCMP_SYS(socket),
+		                          1,
+		                          SCMP_A0(SCMP_CMP_EQ, AF_PACKET)))
 			goto release;
 
-		if (!seccomp_rule_add(ctx,
-		                      SCMP_ACT_ERRNO(EPERM),
-		                      SCMP_SYS(socketpair),
-		                      1,
-		                      SCMP_A0(SCMP_CMP_EQ, AF_PACKET)))
-			goto release;
-	}
-
-	if (flags & WAIVE_MOUNT) {
-		if (!seccomp_rule_add(ctx,
-		                      SCMP_ACT_ERRNO(EPERM),
-		                      SCMP_SYS(mount),
-		                      0))
-			goto release;
-
-		if (!seccomp_rule_add(ctx,
-		                      SCMP_ACT_ERRNO(EPERM),
-		                      SCMP_SYS(umount),
-		                      0))
-			goto release;
-
-		if (!seccomp_rule_add(ctx,
-		                      SCMP_ACT_ERRNO(EPERM),
-		                      SCMP_SYS(umount2),
-		                      0))
+		if (0 != seccomp_rule_add(ctx,
+		                          SCMP_ACT_ERRNO(EPERM),
+		                          SCMP_SYS(socketpair),
+		                          1,
+		                          SCMP_A0(SCMP_CMP_EQ, AF_PACKET)))
 			goto release;
 	}
 
-	if (flags & WAIVE_OPEN) {
-		if (!seccomp_rule_add(ctx,
-		                      SCMP_ACT_ERRNO(EPERM),
-		                      SCMP_SYS(open),
-		                      0))
+	if (0 != (WAIVE_MOUNT & flags)) {
+		if (0 != seccomp_rule_add(ctx,
+		                          SCMP_ACT_ERRNO(EPERM),
+		                          SCMP_SYS(mount),
+		                          0))
 			goto release;
 
-		if (!seccomp_rule_add(ctx,
-		                      SCMP_ACT_ERRNO(EPERM),
-		                      SCMP_SYS(openat),
-		                      0))
+		if (0 != seccomp_rule_add(ctx,
+		                          SCMP_ACT_ERRNO(EPERM),
+		                          SCMP_SYS(umount),
+		                          0))
 			goto release;
 
-		if (!seccomp_rule_add(ctx,
-		                      SCMP_ACT_ERRNO(EPERM),
-		                      SCMP_SYS(creat),
-		                      0))
-			goto release;
-	}
-
-	if (flags & WAIVE_EXEC) {
-		if (!seccomp_rule_add(ctx,
-		                      SCMP_ACT_ERRNO(EPERM),
-		                      SCMP_SYS(execve),
-		                      0))
-			goto release;
-
-		if (!seccomp_rule_add(ctx,
-		                      SCMP_ACT_ERRNO(EPERM),
-		                      SCMP_SYS(mprotect),
-		                      1,
-		                      SCMP_A2(SCMP_CMP_EQ, PROT_EXEC)))
-			goto release;
-
-		if (!seccomp_rule_add(ctx,
-		                      SCMP_ACT_ERRNO(EPERM),
-		                      SCMP_SYS(mprotect),
-		                      1,
-		                      SCMP_A2(SCMP_CMP_EQ, PROT_READ | PROT_EXEC)))
-			goto release;
-
-		if (!seccomp_rule_add(ctx,
-		                      SCMP_ACT_ERRNO(EPERM),
-		                      SCMP_SYS(mprotect),
-		                      1,
-		                      SCMP_A2(SCMP_CMP_EQ, PROT_WRITE | PROT_EXEC)))
-			goto release;
-
-		if (!seccomp_rule_add(ctx,
-		                      SCMP_ACT_ERRNO(EPERM),
-		                      SCMP_SYS(mprotect),
-		                      1,
-		                      SCMP_A2(SCMP_CMP_EQ,
-		                              PROT_READ | PROT_WRITE | PROT_EXEC)))
-			goto release;
-
-		if (!seccomp_rule_add(ctx,
-		                      SCMP_ACT_ERRNO(EPERM),
-		                      SCMP_SYS(mmap),
-		                      1,
-		                      SCMP_A2(SCMP_CMP_EQ, PROT_READ | PROT_EXEC)))
-			goto release;
-
-		if (!seccomp_rule_add(ctx,
-		                      SCMP_ACT_ERRNO(EPERM),
-		                      SCMP_SYS(mmap),
-		                      1,
-		                      SCMP_A2(SCMP_CMP_EQ, PROT_WRITE | PROT_EXEC)))
-			goto release;
-
-		if (!seccomp_rule_add(ctx,
-		                      SCMP_ACT_ERRNO(EPERM),
-		                      SCMP_SYS(mmap),
-		                      1,
-		                      SCMP_A2(SCMP_CMP_EQ,
-		                              PROT_READ | PROT_WRITE | PROT_EXEC)))
+		if (0 != seccomp_rule_add(ctx,
+		                          SCMP_ACT_ERRNO(EPERM),
+		                          SCMP_SYS(umount2),
+		                          0))
 			goto release;
 	}
 
-	if (flags & WAIVE_CLONE) {
-		if (!seccomp_rule_add(ctx,
-		                      SCMP_ACT_ERRNO(EPERM),
-		                      SCMP_SYS(clone),
-		                      0))
+	if (0 != (WAIVE_OPEN & flags)) {
+		if (0 != seccomp_rule_add(ctx,
+		                          SCMP_ACT_ERRNO(EPERM),
+		                          SCMP_SYS(open),
+		                          0))
+			goto release;
+
+		if (0 != seccomp_rule_add(ctx,
+		                          SCMP_ACT_ERRNO(EPERM),
+		                          SCMP_SYS(openat),
+		                          0))
+			goto release;
+
+		if (0 != seccomp_rule_add(ctx,
+		                          SCMP_ACT_ERRNO(EPERM),
+		                          SCMP_SYS(creat),
+		                          0))
 			goto release;
 	}
 
-	if (flags & WAIVE_KILL) {
-		if (!seccomp_rule_add(ctx,
-		                      SCMP_ACT_ERRNO(EPERM),
-		                      SCMP_SYS(kill),
-		                      1,
-		                      SCMP_A0(SCMP_CMP_NE, 0)))
+	if (0 != (WAIVE_EXEC & flags)) {
+		if (0 != seccomp_rule_add(ctx,
+		                          SCMP_ACT_ERRNO(EPERM),
+		                          SCMP_SYS(execve),
+		                          0))
+			goto release;
+
+		if (0 != seccomp_rule_add(ctx,
+		                          SCMP_ACT_ERRNO(EPERM),
+		                          SCMP_SYS(mprotect),
+		                          1,
+		                          SCMP_A2(SCMP_CMP_EQ, PROT_EXEC)))
+			goto release;
+
+		if (0 != seccomp_rule_add(ctx,
+		                          SCMP_ACT_ERRNO(EPERM),
+		                          SCMP_SYS(mprotect),
+		                          1,
+		                          SCMP_A2(SCMP_CMP_EQ, PROT_READ | PROT_EXEC)))
+			goto release;
+
+		if (0 != seccomp_rule_add(ctx,
+		                          SCMP_ACT_ERRNO(EPERM),
+		                          SCMP_SYS(mprotect),
+		                          1,
+		                          SCMP_A2(SCMP_CMP_EQ, PROT_WRITE | PROT_EXEC)))
+			goto release;
+
+		if (0 != seccomp_rule_add(ctx,
+		                          SCMP_ACT_ERRNO(EPERM),
+		                          SCMP_SYS(mprotect),
+		                          1,
+		                          SCMP_A2(SCMP_CMP_EQ,
+		                                  PROT_READ | PROT_WRITE | PROT_EXEC)))
+			goto release;
+
+		if (0 != seccomp_rule_add(ctx,
+		                          SCMP_ACT_ERRNO(EPERM),
+		                          SCMP_SYS(mmap),
+		                          1,
+		                          SCMP_A2(SCMP_CMP_EQ, PROT_READ | PROT_EXEC)))
+			goto release;
+
+		if (0 != seccomp_rule_add(ctx,
+		                          SCMP_ACT_ERRNO(EPERM),
+		                          SCMP_SYS(mmap),
+		                          1,
+		                          SCMP_A2(SCMP_CMP_EQ, PROT_WRITE | PROT_EXEC)))
+			goto release;
+
+		if (0 != seccomp_rule_add(ctx,
+		                          SCMP_ACT_ERRNO(EPERM),
+		                          SCMP_SYS(mmap),
+		                          1,
+		                          SCMP_A2(SCMP_CMP_EQ,
+		                                  PROT_READ | PROT_WRITE | PROT_EXEC)))
+			goto release;
+	}
+
+	if (0 != (WAIVE_CLONE & flags)) {
+		if (0 != seccomp_rule_add(ctx,
+		                          SCMP_ACT_ERRNO(EPERM),
+		                          SCMP_SYS(clone),
+		                          0))
+			goto release;
+	}
+
+	if (0 != (WAIVE_KILL & flags)) {
+		if (0 != seccomp_rule_add(ctx,
+		                          SCMP_ACT_ERRNO(EPERM),
+		                          SCMP_SYS(kill),
+		                          1,
+		                          SCMP_A0(SCMP_CMP_NE, 0)))
+			goto release;
+	}
+
+	if (0 != (WAIVE_PIPE & flags)) {
+		if (0 != seccomp_rule_add(ctx,
+		                          SCMP_ACT_ERRNO(EPERM),
+		                          SCMP_SYS(pipe),
+		                          0))
+			goto release;
+
+		if (0 != seccomp_rule_add(ctx,
+		                          SCMP_ACT_ERRNO(EPERM),
+		                          SCMP_SYS(pipe2),
+		                          0))
+			goto release;
+
+		if (0 != seccomp_rule_add(ctx,
+		                          SCMP_ACT_ERRNO(EPERM),
+		                          SCMP_SYS(mknod),
+		                          0))
 			goto release;
 	}
 
