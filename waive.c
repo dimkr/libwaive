@@ -53,6 +53,20 @@ int waive(const int flags)
 		                      1,
 		                      SCMP_A0(SCMP_CMP_EQ, AF_INET6)))
 			goto release;
+
+		if (!seccomp_rule_add(ctx,
+		                      SCMP_ACT_ERRNO(EPERM),
+		                      SCMP_SYS(socketpair),
+		                      1,
+		                      SCMP_A0(SCMP_CMP_EQ, AF_INET)))
+			goto release;
+
+		if (!seccomp_rule_add(ctx,
+		                      SCMP_ACT_ERRNO(EPERM),
+		                      SCMP_SYS(socketpair),
+		                      1,
+		                      SCMP_A0(SCMP_CMP_EQ, AF_INET6)))
+			goto release;
 	}
 
 	if (flags & WAIVE_UN) {
@@ -62,12 +76,26 @@ int waive(const int flags)
 		                          1,
 		                          SCMP_A0(SCMP_CMP_EQ, AF_UNIX)))
 			goto release;
+
+		if (!seccomp_rule_add(ctx,
+		                      SCMP_ACT_ERRNO(EPERM),
+		                      SCMP_SYS(socketpair),
+		                      1,
+		                      SCMP_A0(SCMP_CMP_EQ, AF_UNIX)))
+			goto release;
 	}
 
 	if (flags & WAIVE_PACKET) {
 		if (!seccomp_rule_add(ctx,
 		                      SCMP_ACT_ERRNO(EPERM),
 		                      SCMP_SYS(socket),
+		                      1,
+		                      SCMP_A0(SCMP_CMP_EQ, AF_PACKET)))
+			goto release;
+
+		if (!seccomp_rule_add(ctx,
+		                      SCMP_ACT_ERRNO(EPERM),
+		                      SCMP_SYS(socketpair),
 		                      1,
 		                      SCMP_A0(SCMP_CMP_EQ, AF_PACKET)))
 			goto release;
