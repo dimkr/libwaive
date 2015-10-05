@@ -8,7 +8,7 @@ Overview
 ========
 
 libwaive is a tiny library that provides waive(), a function that allows a
-process to waive its right to perform certain actions (e.g open a file).
+process to waive its right to perform certain actions (e.g. open a file).
 
 It is inspired by Theo de Raadt's tame() system call
 (http://article.gmane.org/gmane.os.openbsd.tech/43085) and uses libseccomp
