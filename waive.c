@@ -25,7 +25,7 @@
 #include <sys/socket.h>
 #include <sys/mman.h>
 #include <errno.h>
-#include <stdlib.h>
+#include <stddef.h>
 
 #include <seccomp.h>
 
