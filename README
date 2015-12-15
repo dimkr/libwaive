@@ -12,7 +12,18 @@ process to waive its right to perform certain actions (e.g. open a file).
 
 It is inspired by Theo de Raadt's tame() system call
 (http://article.gmane.org/gmane.os.openbsd.tech/43085) and uses libseccomp
-(https://github.com/seccomp/libseccomp).
+(https://github.com/seccomp/libseccomp) and cmake (https://cmake.org).
+
+Building
+========
+
+To build, simply run the following commands:
+
+$ mkdir build
+$ cd build
+$ cmake ..
+$ make
+$ sudo make install
 
 Credits and Legal Information
 =============================
