@@ -17,13 +17,21 @@ It is inspired by Theo de Raadt's tame() system call
 Building
 ========
 
+libwaive can be built with either CMake (https://www.cmake.org/) or GNU Make
+(https://www.gnu.org/software/make/), with some limitations.
+
 To build, simply run the following commands:
 
-$ mkdir build
-$ cd build
-$ cmake ..
-$ make
-$ sudo make install
+  $ mkdir build
+  $ cd build
+  $ cmake ..
+  $ make
+  $ sudo make install
+
+or:
+
+  $ make
+  $ sudo make install
 
 Credits and Legal Information
 =============================
