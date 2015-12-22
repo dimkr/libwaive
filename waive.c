@@ -28,6 +28,9 @@
 #include <stddef.h>
 #include <unistd.h>
 #include <sys/syscall.h>
+#ifdef __NR_socketcall
+#	include <linux/net.h>
+#endif
 
 #include <seccomp.h>
 
@@ -42,66 +45,81 @@ int waive(const int flags)
 	if (NULL == ctx)
 		goto out;
 
-	if (0 != (WAIVE_INET & flags)) {
+	if (0 != (WAIVE_SOCKET & flags)) {
 		if (0 != seccomp_rule_add(ctx,
 		                          SCMP_ACT_ERRNO(EPERM),
 		                          SCMP_SYS(socket),
-		                          1,
-		                          SCMP_A0(SCMP_CMP_EQ, AF_INET)))
-			goto release;
-
-		if (0 != seccomp_rule_add(ctx,
-		                          SCMP_ACT_ERRNO(EPERM),
-		                          SCMP_SYS(socket),
-		                          1,
-		                          SCMP_A0(SCMP_CMP_EQ, AF_INET6)))
+		                          0))
 			goto release;
 
 		if (0 != seccomp_rule_add(ctx,
 		                          SCMP_ACT_ERRNO(EPERM),
 		                          SCMP_SYS(socketpair),
-		                          1,
-		                          SCMP_A0(SCMP_CMP_EQ, AF_INET)))
-			goto release;
-
-		if (0 != seccomp_rule_add(ctx,
-		                          SCMP_ACT_ERRNO(EPERM),
-		                          SCMP_SYS(socketpair),
-		                          1,
-		                          SCMP_A0(SCMP_CMP_EQ, AF_INET6)))
+		                          0))
 			goto release;
 	}
+	else {
+		if (0 != (WAIVE_INET & flags)) {
+			if (0 != seccomp_rule_add(ctx,
+			                          SCMP_ACT_ERRNO(EPERM),
+			                          SCMP_SYS(socket),
+			                          1,
+			                          SCMP_A0(SCMP_CMP_EQ, AF_INET)))
+				goto release;
 
-	if (0 != (WAIVE_UN & flags)) {
-		if (0 != seccomp_rule_add(ctx,
-		                          SCMP_ACT_ERRNO(EPERM),
-		                          SCMP_SYS(socket),
-		                          1,
-		                          SCMP_A0(SCMP_CMP_EQ, AF_UNIX)))
-			goto release;
+			if (0 != seccomp_rule_add(ctx,
+			                          SCMP_ACT_ERRNO(EPERM),
+			                          SCMP_SYS(socket),
+			                          1,
+			                          SCMP_A0(SCMP_CMP_EQ, AF_INET6)))
+				goto release;
 
-		if (0 != seccomp_rule_add(ctx,
-		                          SCMP_ACT_ERRNO(EPERM),
-		                          SCMP_SYS(socketpair),
-		                          1,
-		                          SCMP_A0(SCMP_CMP_EQ, AF_UNIX)))
-			goto release;
-	}
+			if (0 != seccomp_rule_add(ctx,
+			                          SCMP_ACT_ERRNO(EPERM),
+			                          SCMP_SYS(socketpair),
+			                          1,
+			                          SCMP_A0(SCMP_CMP_EQ, AF_INET)))
+				goto release;
 
-	if (0 != (WAIVE_PACKET & flags)) {
-		if (0 != seccomp_rule_add(ctx,
-		                          SCMP_ACT_ERRNO(EPERM),
-		                          SCMP_SYS(socket),
-		                          1,
-		                          SCMP_A0(SCMP_CMP_EQ, AF_PACKET)))
-			goto release;
+			if (0 != seccomp_rule_add(ctx,
+			                          SCMP_ACT_ERRNO(EPERM),
+			                          SCMP_SYS(socketpair),
+			                          1,
+			                          SCMP_A0(SCMP_CMP_EQ, AF_INET6)))
+				goto release;
+		}
 
-		if (0 != seccomp_rule_add(ctx,
-		                          SCMP_ACT_ERRNO(EPERM),
-		                          SCMP_SYS(socketpair),
-		                          1,
-		                          SCMP_A0(SCMP_CMP_EQ, AF_PACKET)))
-			goto release;
+		if (0 != (WAIVE_UN & flags)) {
+			if (0 != seccomp_rule_add(ctx,
+			                          SCMP_ACT_ERRNO(EPERM),
+			                          SCMP_SYS(socket),
+			                          1,
+			                          SCMP_A0(SCMP_CMP_EQ, AF_UNIX)))
+				goto release;
+
+			if (0 != seccomp_rule_add(ctx,
+			                          SCMP_ACT_ERRNO(EPERM),
+			                          SCMP_SYS(socketpair),
+			                          1,
+			                          SCMP_A0(SCMP_CMP_EQ, AF_UNIX)))
+				goto release;
+		}
+
+		if (0 != (WAIVE_PACKET & flags)) {
+			if (0 != seccomp_rule_add(ctx,
+			                          SCMP_ACT_ERRNO(EPERM),
+			                          SCMP_SYS(socket),
+			                          1,
+			                          SCMP_A0(SCMP_CMP_EQ, AF_PACKET)))
+				goto release;
+
+			if (0 != seccomp_rule_add(ctx,
+			                          SCMP_ACT_ERRNO(EPERM),
+			                          SCMP_SYS(socketpair),
+			                          1,
+			                          SCMP_A0(SCMP_CMP_EQ, AF_PACKET)))
+				goto release;
+		}
 	}
 
 	if (0 != (WAIVE_MOUNT & flags)) {
@@ -209,6 +227,21 @@ int waive(const int flags)
 		                          SCMP_A2(SCMP_CMP_EQ,
 		                                  PROT_READ | PROT_WRITE | PROT_EXEC)))
 			goto release;
+
+		if (0 != seccomp_rule_add(ctx,
+		                          SCMP_ACT_ERRNO(EPERM),
+		                          SCMP_SYS(mmap2),
+		                          1,
+		                          SCMP_A2(SCMP_CMP_EQ, PROT_WRITE | PROT_EXEC)))
+			goto release;
+
+		if (0 != seccomp_rule_add(ctx,
+		                          SCMP_ACT_ERRNO(EPERM),
+		                          SCMP_SYS(mmap2),
+		                          1,
+		                          SCMP_A2(SCMP_CMP_EQ,
+		                                  PROT_READ | PROT_WRITE | PROT_EXEC)))
+			goto release;
 	}
 
 	if (0 != (WAIVE_CLONE & flags)) {
@@ -223,6 +256,20 @@ int waive(const int flags)
 		if (0 != seccomp_rule_add(ctx,
 		                          SCMP_ACT_ERRNO(EPERM),
 		                          SCMP_SYS(kill),
+		                          1,
+		                          SCMP_A0(SCMP_CMP_NE, 0)))
+			goto release;
+
+		if (0 != seccomp_rule_add(ctx,
+		                          SCMP_ACT_ERRNO(EPERM),
+		                          SCMP_SYS(tkill),
+		                          1,
+		                          SCMP_A0(SCMP_CMP_NE, 0)))
+			goto release;
+
+		if (0 != seccomp_rule_add(ctx,
+		                          SCMP_ACT_ERRNO(EPERM),
+		                          SCMP_SYS(tgkill),
 		                          1,
 		                          SCMP_A0(SCMP_CMP_NE, 0)))
 			goto release;
@@ -244,6 +291,12 @@ int waive(const int flags)
 		if (0 != seccomp_rule_add(ctx,
 		                          SCMP_ACT_ERRNO(EPERM),
 		                          SCMP_SYS(mknod),
+		                          0))
+			goto release;
+
+		if (0 != seccomp_rule_add(ctx,
+		                          SCMP_ACT_ERRNO(EPERM),
+		                          SCMP_SYS(mknodat),
 		                          0))
 			goto release;
 	}

@@ -34,7 +34,8 @@ enum waive_flags {
 	WAIVE_EXEC		= 1 << 5,
 	WAIVE_CLONE		= 1 << 6,
 	WAIVE_KILL		= 1 << 7,
-	WAIVE_PIPE		= 1 << 8
+	WAIVE_PIPE		= 1 << 8,
+	WAIVE_SOCKET	= 1 << 9
 };
 
 int waive(const int flags);

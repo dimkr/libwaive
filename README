@@ -33,6 +33,19 @@ or:
   $ make
   $ sudo make install
 
+Limitations
+===========
+
+libwaive has three major shortcomings:
+  1) It has to be updated when new system calls are introduced.
+  2) When built against older kernel headers, libwaive won't block newer system
+     calls present in the kernel it actually runs on, because detection is done
+     at build-time.
+  3) Due to limitations of libseccomp's API, libwaive cannot check the
+     parameters of system calls that accept pointers (e.g. socketcall).
+     Therefore, it is recommended to use WAIVE_SOCKET rather than WAIVE_INET,
+     WAIVE_UN or WAIVE_PACKET, if possible.
+
 Credits and Legal Information
 =============================
 
