@@ -26,6 +26,8 @@
 #include <sys/mman.h>
 #include <errno.h>
 #include <stddef.h>
+#include <unistd.h>
+#include <sys/syscall.h>
 
 #include <seccomp.h>
 
@@ -148,6 +150,14 @@ int waive(const int flags)
 		                          SCMP_SYS(execve),
 		                          0))
 			goto release;
+
+#ifdef __NR_execveat
+		if (0 != seccomp_rule_add(ctx,
+		                          SCMP_ACT_ERRNO(EPERM),
+		                          SCMP_SYS(execveat),
+		                          0))
+			goto release;
+#endif
 
 		if (0 != seccomp_rule_add(ctx,
 		                          SCMP_ACT_ERRNO(EPERM),
